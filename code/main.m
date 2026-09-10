@@ -1,8 +1,11 @@
-addpath('utils')
 clear all; close all; clc;
 
-% put all the studies together and preprocess the data
-preprocess_create_master_table()
+codeDir = fileparts(mfilename('fullpath'));
+cd(codeDir)
+addpath(genpath(fullfile(codeDir, 'utils')))
+
+% % put all the studies together and preprocess the data
+% preprocess_create_master_table()
 
 % weighted, flexible-degree polynomial fitting to estimate scatter (+model-free bin estimates)
 estimate_polynomial_mvav()
@@ -19,5 +22,7 @@ figureS1()
 figureS2to5()
 figureS6()
 
-% stats using LMMs
-linear_mixed_models()
+% % stats using LMMs
+% linear_mixed_models()
+
+cd(fullfile(codeDir, '..', 'results'))

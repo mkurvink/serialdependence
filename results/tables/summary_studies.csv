@@ -1,0 +1,21 @@
+ID,Study,Stimulus,Datasets,N,AllTrials,CleanTrials
+1,Abreo et al. (2023),Orientation,1,36,6754,6335
+2,Blonde et al. (2023),Orientation,1,17,2380,2228
+3,Ceylan & Pascucci (2023),Orientation,1,20,6000,5822
+4,Ceylan et al. (2021),Orientation,4,48,19200,18662
+5,Chetverikov & Jehee (2023),Motion,2,18,19836,8389
+6,Cicchini et al. (2018),Orientation,1,6,12300,11833
+7,Fischer & Whitney (2014),Orientation,1,4,3328,3197
+8,Fischer et al. (2020),Motion,4,109,176256,86343
+9,Gallagher & Benton (2022),Orientation,2,20,16420,15899
+10,Houborg et al. (2023),Orientation,2,31,6200,5852
+11,Houborg et al. (2023b),Orientation,2,32,31720,31168
+12,Kondo et al. (2022),Orientation,4,76,76000,73234
+13,Lau & Maus (2019),Orientation,1,29,15404,13732
+14,Moon & Kwon (2022),Motion,1,8,13170,6792
+15,Moon et al. (2023),Motion,3,24,39330,20466
+16,Ozkirli & Pascucci (2023),Orientation,6,56,22328,21622
+17,Pascucci et al. (2024),Orientation,1,26,20800,13512
+18,Sadil et al. (2024),Orientation,1,16,24240,23537
+19,Samaha et al. (2019),Orientation,2,20,5930,5501
+ , ,Total,40,596,517596,374124

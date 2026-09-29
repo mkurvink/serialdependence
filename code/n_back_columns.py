@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import os
+from paths import global_path, master_path, data_path
 
 # Paths
-global_path = Path("/Users/Kurvi001/Documents/Serial_Dependence/Analysis")
-master_path = global_path / "results" / "SD_ma_master_table.csv"
-data_path = global_path / "data"
 df = pd.read_csv(master_path, sep=";")
 output_path = global_path / "data_n_back"
 output_path.mkdir(parents=True, exist_ok=True)
@@ -150,7 +147,7 @@ def create_n_back_datasets(output_path = output_path, data_path = data_path, df 
         set_to_nan = failing_codenum | too_early_in_block | missing_any_delta
         source_dfs[name].loc[set_to_nan, delta_cols] = np.nan
 
-        columns_to_save = original_columns + delta_cols + ["trial_in_block", "block_unique"]
+        columns_to_save = original_columns + ["codenum"] + delta_cols + ["trial_in_block", "block_unique"]
 
         output_df = source_dfs[name].sort_values("_row").reset_index(drop=True)
         output_df = output_df[columns_to_save].copy()

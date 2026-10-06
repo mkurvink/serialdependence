@@ -1,2 +1,5 @@
 results/SD_ma_master_table.csv
 results/delta_check_trial_details.csv
+results/SD_ma_master_table_n_back.csv
+results/SD_ma_master_table_n_back_first_half.csv
+results/SD_ma_master_table_n_back_second_half.csv

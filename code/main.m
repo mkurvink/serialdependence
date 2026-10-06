@@ -22,7 +22,7 @@ addpath(genpath(fullfile(codeDir, 'utils')))
 % figureS2to5()
 % figureS6()
 
-% stats using LMMs
-linear_mixed_models()
+% % stats using LMMs
+% linear_mixed_models()
 
 cd(fullfile(codeDir, '..', 'results'))

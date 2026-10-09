@@ -3,6 +3,8 @@ function [amplitudes,amp_std_delta] = estimate_bias_n_back_part_level()
 scriptPath = mfilename('fullpath');
 [currentDir,~,~] = fileparts(scriptPath);
 analysisDir = fileparts(fileparts(currentDir));
+resultsDir = fullfile(analysisDir,'results');
+p_value_output_file = fullfile(resultsDir,'fit_p_values_n_back_first_half.csv');
 
 tbl = readtable(fullfile(analysisDir,'results','SD_ma_master_table_n_back_first_half.csv'),'Delimiter',';');
 
@@ -15,7 +17,7 @@ amplitudes = cell(1,X);
 fit_p_values = cell(1,X);
 signed_p_values = nan(1,X);
 absolute_p_values = nan(1,X);
-n_permutations = 500;  % Number of permutations for the permutation test
+n_permutations = 10000;  % Number of permutations for the permutation test
 
 % Derivative of Gaussian curve
 DoG = @(parameters,x) x .* parameters(1) .* (1./(sqrt(2).*parameters(2))) .* c .* exp(-(x./(sqrt(2).*parameters(2))).^2);
@@ -47,9 +49,8 @@ for x = 1:X
             experiment_number = experiments(k);
             tbl_i_k = tbl_i(tbl_i.expnum==experiment_number,:);
             cond = unique(tbl_i_k.cond);
-            ncond = numel(cond);
 
-            for j = 1:ncond
+            for j = 1:numel(cond)
                 tbl_i_k_j = tbl_i_k(tbl_i_k.cond==cond(j),:);
                 obs = unique(tbl_i_k_j.obs);
                 nobs = numel(obs);
@@ -130,9 +131,8 @@ for x = 1:X
                 experiment_number = experiments(k);
                 tbl_i_k = tbl_i(tbl_i.expnum==experiment_number,:);
                 cond = unique(tbl_i_k.cond);
-                ncond = numel(cond);
 
-                for j = 1:ncond
+                for j = 1:numel(cond)
                     tbl_i_k_j = tbl_i_k(tbl_i_k.cond==cond(j),:);
                     obs = unique(tbl_i_k_j.obs);
                     nobs = numel(obs);
@@ -180,7 +180,7 @@ for x = 1:X
         permuted_signed_means(permutation) = mean(permuted_lag_amplitudes,'omitnan');   % Takes the mean of the permuted amplitudes across all observers for this permutation
         permuted_absolute_means(permutation) = mean(abs(permuted_lag_amplitudes),'omitnan');    % Takes the mean of the absolute values of the permuted amplitudes across all observers for this permutation
 
-        if mod(permutation,50) == 0 % Change in relation to number of permutations for sueful progress reports
+        if mod(permutation,1000) == 0 % Change in relation to number of permutations for sueful progress reports
             fprintf('N-%d: %d/%d permutations completed (%.1f minutes)\n',x,permutation,n_permutations,toc(lag_timer)/60);
         end
 
@@ -213,6 +213,8 @@ for x = 1:X
 
     fprintf('Signed mean amplitude p-value for N-%d: %.5f\n',x,signed_p_values(x));
     fprintf('Absolute mean amplitude p-value for N-%d: %.5f\n',x,absolute_p_values(x));
+
+    writetable(fit_p_values,p_value_output_file,'Delimiter',';');   % Save the fit-level p-values to a CSV file to inspect
 
 end
 end

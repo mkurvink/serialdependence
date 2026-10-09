@@ -58,6 +58,7 @@ for x = 1:X
     xticks([0 45 90]);
     set(gca, 'FontSize', 20, 'LineWidth', 1.9, 'FontName', FontName);
     xticklabels({'iso' 'mid' 'ortho'});
+    
     set(gcf,'PaperOrientation','landscape')
     set(gcf, 'PaperUnits', 'normalized');
     exportgraphics(gcf,fullfile(figuresDir,sprintf('Figure3B_delta_%d.pdf',x)),'BackgroundColor','none')

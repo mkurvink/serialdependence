@@ -1,0 +1,176 @@
+----------------------------------------------------------------------
+**********************************************************************
+----------------------------------------------------------------------
+ 
+Using polynomial estimates:
+ 
+
+Linear mixed-effects model fit by ML
+
+Model information:
+    Number of observations            2265
+    Fixed effects coefficients           3
+    Random effects coefficients       4170
+    Covariance parameters               19
+
+Formula:
+    ES ~ 1 + SI + (1 + SI | obsid) + (1 + SI | codenum) + (1 + SI | codenum:obsid)
+
+Model fit statistics:
+    AIC      BIC      LogLikelihood    Deviance
+    11322    11448    -5638.8          11278   
+
+Fixed effects coefficients (95% CIs):
+    Name                   Estimate     SE         tStat       DF      pValue        Lower   
+    {'(Intercept)'}           9.6654    0.62901      15.366    2262    9.2615e-51      8.4319
+    {'SI_mid'     }          0.84848    0.12301      6.8978    2262    6.8311e-12     0.60726
+    {'SI_ortho'   }        0.0075932    0.10137    0.074906    2262        0.9403    -0.19119
+
+
+    Upper  
+     10.899
+     1.0897
+    0.20638
+
+Random effects covariance parameters (95% CIs):
+Group: obsid (595 Levels)
+    Name1                  Name2                  Type            Estimate    Lower      Upper  
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }         3.3586      3.0917     3.6486
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}        0.97243     0.96661    0.97725
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}        0.23646      0.1072    0.35785
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }        0.40723     0.24412     0.6793
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}        0.45652     0.34425    0.55592
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }        0.59891     0.31188     1.1501
+
+Group: codenum (40 Levels)
+    Name1                  Name2                  Type            Estimate    Lower       Upper  
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }          3.7948      2.9892     4.8175
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}         0.74198    -0.16204    0.96885
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}        0.014121    -0.65039    0.66639
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }         0.42568     0.22788    0.79518
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}         0.24433    -0.73083    0.89152
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }         0.25836    0.079574    0.83883
+
+Group: codenum:obsid (755 Levels)
+    Name1                  Name2                  Type            Estimate    Lower       Upper   
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }          2.2416      1.9972      2.5158
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}        -0.69554    -0.82279    -0.50188
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}        -0.97107         NaN         NaN
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }          1.3813         NaN         NaN
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}         0.54227         NaN         NaN
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }         0.41473         NaN         NaN
+
+Group: Error
+    Name               Estimate    Lower    Upper
+    {'Res Std'}        1.6796      NaN      NaN  
+
+dBIC = -69.3964, and BF_reduced_over_full = 1172818393720312
+=== HETEROGENEITY ASSESSMENT FOR CATEGORICAL SI ===
+
+Fixed Effects: (Intercept) SI_mid 
+
+
+===================================================================== 
+		 Grouping Variable: obsid 
+===================================================================== 
+Covariance Matrix:
+    11.2803      1.3300      0.4756 
+     1.3300      0.1658      0.1113 
+     0.4756      0.1113      0.3587 
+
+Heterogeneity by SI level/contrast:
+  (Intercept): 	τ² = 11.28, 	I² = 79.99% 	(Large heterogeneity)
+  SI_mid: 	τ² = 0.17, 	I² = 5.55% 	(Weak to no heterogeneity)
+  SI_ortho: 	τ² = 0.36, 	I² = 11.28% 	(Weak to no heterogeneity)
+
+
+===================================================================== 
+		 Grouping Variable: codenum 
+===================================================================== 
+Covariance Matrix:
+    14.4003      1.1986      0.0138 
+     1.1986      0.1812      0.0269 
+     0.0138      0.0269      0.0667 
+
+Heterogeneity by SI level/contrast:
+  (Intercept): 	τ² = 14.40, 	I² = 83.62% 	(Large heterogeneity)
+  SI_mid: 	τ² = 0.18, 	I² = 6.04% 	(Weak to no heterogeneity)
+  SI_ortho: 	τ² = 0.07, 	I² = 2.31% 	(Weak to no heterogeneity)
+
+ 
+----------------------------------------------------------------------
+**********************************************************************
+----------------------------------------------------------------------
+ 
+Using model-free estimates:
+ 
+
+Linear mixed-effects model fit by ML
+
+Model information:
+    Number of observations            2262
+    Fixed effects coefficients           3
+    Random effects coefficients       4170
+    Covariance parameters               19
+
+Formula:
+    bin_scatter ~ 1 + SI + (1 + SI | obsid) + (1 + SI | codenum) + (1 + SI | codenum:obsid)
+
+Model fit statistics:
+    AIC      BIC      LogLikelihood    Deviance
+    11032    11158    -5493.9          10988   
+
+Fixed effects coefficients (95% CIs):
+    Name                   Estimate    SE         tStat     DF      pValue        Lower    
+    {'(Intercept)'}         10.531     0.68445    15.386    2259    7.0761e-51       9.1886
+    {'SI_mid'     }        0.65255     0.12722    5.1292    2259    3.1577e-07      0.40306
+    {'SI_ortho'   }        0.12161     0.10436    1.1653    2259       0.24401    -0.083035
+
+
+    Upper  
+     11.873
+    0.90204
+    0.32626
+
+Random effects covariance parameters (95% CIs):
+Group: obsid (595 Levels)
+    Name1                  Name2                  Type            Estimate    Lower         Upper  
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }          3.8105        3.5231     4.1214
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}         0.50274        0.4002    0.59285
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}        -0.29995           NaN        NaN
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }        0.062112    0.00064148     6.0142
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}         0.67384           NaN        NaN
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }         0.22691       0.01772     2.9058
+
+Group: codenum (40 Levels)
+    Name1                  Name2                  Type            Estimate     Lower       Upper  
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }           4.1273      3.2475     5.2454
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}        -0.051271    -0.44985    0.36434
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}         -0.22813    -0.69784    0.37879
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }          0.59006     0.39815    0.87447
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}          0.93073    -0.89844    0.99986
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }          0.33683     0.14523    0.78119
+
+Group: codenum:obsid (755 Levels)
+    Name1                  Name2                  Type            Estimate    Lower     
+    {'(Intercept)'}        {'(Intercept)'}        {'std' }           2.366       0.12355
+    {'SI_mid'     }        {'(Intercept)'}        {'corr'}        -0.39663      -0.69913
+    {'SI_ortho'   }        {'(Intercept)'}        {'corr'}        -0.48008      -0.64185
+    {'SI_mid'     }        {'SI_mid'     }        {'std' }           1.001    4.8759e-15
+    {'SI_ortho'   }        {'SI_mid'     }        {'corr'}         0.68316            -1
+    {'SI_ortho'   }        {'SI_ortho'   }        {'std' }           1.302    4.5034e-09
+
+
+    Upper     
+        45.308
+      0.026309
+      -0.27741
+    2.0549e+14
+             1
+    3.7641e+08
+
+Group: Error
+    Name               Estimate    Lower         Upper 
+    {'Res Std'}        1.4334      0.00046416    4426.8
+
+dBIC = -53.7582, and BF_reduced_over_full = 471453546411.449

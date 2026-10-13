@@ -7,7 +7,7 @@ analysisDir = fileparts(fileparts(currentDir));
 tbl = readtable(fullfile(analysisDir,'results','SD_ma_master_table_n_back_first_half.csv'),'Delimiter',';');
 
 % Initializing some variables
-X = 6;
+X = 10;
 error_variable = 'error_ori_deb';
 c = sqrt(2) / exp(-0.5);
 amp_std_delta = nan(X,2);

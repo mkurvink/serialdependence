@@ -8,61 +8,75 @@ def estimate_bias_n_back_part_level():
     tbl = pd.read_csv(results_path / "SD_ma_master_table_n_back_first_half.csv", sep=";")
 
     # Initializing some variables
-    X = 6
+    X = 10
     error_variable = "error_ori_deb"
     c = np.sqrt(2) / np.exp(-0.5)
     amp_std_delta = np.full((X, 2), np.nan)
     amp_std_delta_abs = np.full((X, 2), np.nan)
     amplitudes = [None] * X
     fit_p_values = [None] * X
-    fdr_p_values = [None] * X
+    # fdr_p_values = [None] * X
     signed_p_values = np.full(X, np.nan)
     absolute_p_values = np.full(X, np.nan)
-    n_permutations = 500    # Number of permutations
+    significance_records = []
+    n_permutations = 1    # Number of permutations
     rng = np.random.default_rng(289)  # Random number generator for reproducibility
     # Derivative of Gaussian curve
     def DoG(x, a, peak):
         return x * a * (1/(np.sqrt(2)*peak)) * c * np.exp(-(x/(np.sqrt(2)*peak))**2)
-    def fit_dog(x_data,y_data):
-        param, covar = scipy.optimize.curve_fit(
-            DoG,
-            x_data,
-            y_data,
-            p0=starting_values,
-            bounds=(lower_bounds,upper_bounds),
-            method="trf",
-            max_nfev=2000,
-        )
+    def fit_dog(x_data, y_data):
+        best_param = None
+        best_ssr = np.inf
 
-        return param
+        for starting_values in ([2, 25], [-2, 25]):
+            try:
+                param, _ = scipy.optimize.curve_fit(
+                    DoG,
+                    x_data,
+                    y_data,
+                    p0=starting_values,
+                    bounds=(lower_bounds, upper_bounds),
+                    method="trf",
+                    max_nfev=2000,
+                )
+            except RuntimeError:
+                continue
 
-    # Benjamini-Hochberg procedure for multiple comparisons correction
-    def benjamini_hochberg(p_values):
-        p_values = np.asarray(p_values,dtype=float)
-        adjusted_p_values = np.full(p_values.shape,np.nan)
+            residuals = y_data - DoG(x_data, *param)
+            ssr = np.sum(residuals**2)
 
-        valid = ~np.isnan(p_values)
-        valid_p_values = p_values[valid]
-        m = len(valid_p_values)
+            if ssr < best_ssr:
+                best_ssr = ssr
+                best_param = param
 
-        sort_order = np.argsort(valid_p_values)
-        sorted_p_values = valid_p_values[sort_order]
-        ranks = np.arange(1, m + 1)
+        return best_param
 
-        adjusted_sorted_p_values = sorted_p_values * m / ranks
-        adjusted_sorted_p_values = np.minimum.accumulate(adjusted_sorted_p_values[::-1])[::-1]
-        adjusted_sorted_p_values = np.minimum(adjusted_sorted_p_values,1)
+    # # Benjamini-Hochberg procedure for multiple comparisons correction
+    # def benjamini_hochberg(p_values):
+    #     p_values = np.asarray(p_values,dtype=float)
+    #     adjusted_p_values = np.full(p_values.shape,np.nan)
 
-        valid_adjusted_p_values = np.empty(m)
-        valid_adjusted_p_values[sort_order] = adjusted_sorted_p_values
-        adjusted_p_values[valid] = valid_adjusted_p_values
+    #     valid = ~np.isnan(p_values)
+    #     valid_p_values = p_values[valid]
+    #     m = len(valid_p_values)
 
-        return adjusted_p_values
+    #     sort_order = np.argsort(valid_p_values)
+    #     sorted_p_values = valid_p_values[sort_order]
+    #     ranks = np.arange(1, m + 1)
+
+    #     adjusted_sorted_p_values = sorted_p_values * m / ranks
+    #     adjusted_sorted_p_values = np.minimum.accumulate(adjusted_sorted_p_values[::-1])[::-1]
+    #     adjusted_sorted_p_values = np.minimum(adjusted_sorted_p_values,1)
+
+    #     valid_adjusted_p_values = np.empty(m)
+    #     valid_adjusted_p_values[sort_order] = adjusted_sorted_p_values
+    #     adjusted_p_values[valid] = valid_adjusted_p_values
+
+    #     return adjusted_p_values
 
     # Specifications for the curve fitting
-    starting_values = [2, 25]  # Initial guesses for the parameters
-    lower_bounds = [-20,3]
-    upper_bounds = [20,85]
+    lower_bounds = [-15,5]
+    upper_bounds = [15,85]
 
     # Computing the bias for the observed data
     for trial_lat in range(X):
@@ -168,7 +182,6 @@ def estimate_bias_n_back_part_level():
     # Computing the bias for the observed data
     for trial_lat in range(X):
         delta_variable = f"delta_{trial_lat + 1}"
-        permuted_obs_amplitudes = []
         observed_amplitudes = np.asarray(amplitudes[trial_lat])
         n_observed_fits = len(observed_amplitudes)
 
@@ -206,13 +219,13 @@ def estimate_bias_n_back_part_level():
                             if len(signed_delta) == 0:
                                 continue
 
-                            if len(np.unique(x_data)) < 5:
-                                continue
-
                             shuffled_delta = rng.permutation(signed_delta)
 
                             x_data = shuffled_delta
                             y_data = signed_error
+
+                            if len(np.unique(x_data)) < 5:
+                                continue
 
                             # Fit model
                             param = fit_dog(x_data,y_data)
@@ -226,26 +239,41 @@ def estimate_bias_n_back_part_level():
             permuted_signed_means[permutation] = np.mean(permuted_obs_amplitudes)
             permuted_absolute_means[permutation] = np.mean(np.abs(permuted_obs_amplitudes))
 
-            if (permutation + 1) % (n_permutations / 10) == 0:
-                print(f"N-{trial_lat + 1}: {permutation + 1}/{n_permutations} permutations completed")
+            # if (permutation + 1) % (n_permutations / 10) == 0:
+            #     print(f"N-{trial_lat + 1}: {permutation + 1}/{n_permutations} permutations completed")
 
         # Calculate p-value per trial_lat 
         fit_p_values[trial_lat] = (1 + fit_perm_higher_counts) / (n_permutations + 1)
-        fdr_p_values[trial_lat] = benjamini_hochberg(fit_p_values[trial_lat])
-        significant_fdr = fdr_p_values[trial_lat] <= 0.05
+        # fdr_p_values[trial_lat] = benjamini_hochberg(fit_p_values[trial_lat])
+        # significant_fdr = fdr_p_values[trial_lat] <= 0.05
+        significant_p = fit_p_values[trial_lat] <= 0.05
 
         positive = observed_amplitudes > 0
         negative = observed_amplitudes < 0
+        zero = observed_amplitudes == 0                                     ##############
         positive_count = np.sum(positive)
         negative_count = np.sum(negative)
-        significant_positive_count = np.sum(significant_fdr & positive)
-        significant_negative_count = np.sum(significant_fdr & negative)
+        significant_total_count = np.sum(significant_p)                     ##############
+        significant_positive_count = np.sum(significant_p & positive)
+        significant_negative_count = np.sum(significant_p & negative)
+        significant_zero_count = np.sum(significant_p & zero)               ##############
 
         print(f"N-{trial_lat + 1} fit-level results:\n")
         print(f"Positive amplitudes: {positive_count}/{n_observed_fits}\n")
         print(f"Negative amplitudes: {negative_count}/{n_observed_fits}\n")
+        print(f"All significant amplitudes: {significant_total_count}/{n_observed_fits}")
         print(f"Significant positive amplitudes: {significant_positive_count}/{n_observed_fits}\n")
         print(f"Significant negative amplitudes: {significant_negative_count}/{n_observed_fits}\n")
+        print(f"Significant zero amplitudes: {significant_zero_count}/{n_observed_fits}")
+
+        significance_records.append({
+            "lag": trial_lat + 1,
+            "total_fits": n_observed_fits,
+            "p_below_05": significant_total_count,
+            "significant_positive": significant_positive_count,
+            "significant_negative": significant_negative_count,
+            "significant_zero": significant_zero_count,
+        })
 
         observed_signed_mean = np.mean(observed_amplitudes)
         observed_absolute_mean = np.mean(np.abs(observed_amplitudes))
@@ -258,9 +286,13 @@ def estimate_bias_n_back_part_level():
     fit_p_table = pd.DataFrame({f"delta_{lag+1}": pd.Series(fit_p_values[lag]) for lag in range(X)})
     fit_p_table.to_csv(results_path / "fit_p_values_n_back_first_half.csv", sep = ";", index = False)
 
-    return (amplitudes, amp_std_delta, fit_p_values, signed_p_values, absolute_p_values)
+    amplitudes_df = pd.DataFrame({f"delta_{lag+1}": pd.Series(amplitudes[lag]) for lag in range(X)})
+    amplitudes_df.to_csv(results_path / "amplitudes_n_back_first_half.csv", sep = ";", index = False)
+
+    significance_summary = pd.DataFrame(significance_records)
+    significance_summary.to_csv(results_path / "significance_summary_n_back_first_half.csv", sep=";", index=False)
+
+    return (amplitudes_df, amp_std_delta, fit_p_values, signed_p_values, absolute_p_values, significance_summary)
 
 if __name__ == "__main__":
     estimate_bias_n_back_part_level()
-
-

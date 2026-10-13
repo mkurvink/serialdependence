@@ -74,7 +74,7 @@ def create_n_back_datasets(output_path = output_path, data_path = data_path, df 
             return np.sign(cleaned_values) * np.floor(np.abs(cleaned_values) + 0.5)
 
         # Choose nr. of N-back trials
-        X = 6  # Change this value to select the desired N-back trial count      #####################################                                       ##############################################################
+        X = 10  # Change this value to select the desired N-back trial count      #####################################                                       ##############################################################
         for i in range(1, X + 1):
             source_dfs[name][f"previous_theta_{i}"] = g["theta"].shift(i)
 

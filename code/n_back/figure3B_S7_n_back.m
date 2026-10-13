@@ -13,7 +13,7 @@ if ~exist(figuresDir,'dir')
     mkdir(figuresDir)
 end
 
-X = 6;  % Number of delta conditions
+X = 10;  % Number of delta conditions
 for x = 1:X
     %% Figure 3B: Mean bias moving average and mean error scatter + polynomial fit
     load(fullfile(resultsDir,sprintf('sd_estimates_first_half_delta_%d.mat',x)))    

@@ -2,7 +2,7 @@ import pandas as pd
 from paths import results_path
 
 df = pd.read_csv(results_path / "SD_ma_master_table_n_back.csv", sep=";")
-usable_codenums = (df.groupby("codenum")["delta_6"].apply(lambda values: values.notna().any())) # Change in line with X
+usable_codenums = (df.groupby("codenum")["delta_10"].apply(lambda values: values.notna().any())) # Change in line with X
 usable_codenums = usable_codenums[usable_codenums].index
 df = df[df["codenum"].isin(usable_codenums)].copy()
 

@@ -20,7 +20,7 @@ csvfiles = {csvfiles.name};
 study_list = unique(cellstr(csvfiles));
 
 % Standardize key variables to be used from each dataset
-X = 6; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+X = 10; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delta_variables = arrayfun(@(i) sprintf('delta_%d',i),1:X,'UniformOutput',false);
 variables = [{'obs','theta','resp','delta','error','cond','rt','block','study','experiment','stimulus','expnum'},delta_variables,{'trial_in_block','block_unique'}];
 fprintf('\nGenerating Master table\n\n');

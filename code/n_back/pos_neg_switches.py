@@ -2,6 +2,8 @@ from paths import global_path, results_path
 import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 amplitude_path = results_path / "amplitudes_n_back_first_half.csv"
 df = pd.read_csv(amplitude_path, sep=";", skiprows=1, header=None)
@@ -108,3 +110,27 @@ print(f"Correlation between N-1 and N-4: r = {r_n14:.3f}, p = {p_n14:.4f}")
 print(f"Correlation between N-2 and N-3: r = {r_n23:.3f}, p = {p_n23:.4f}")
 print(f"Correlation between N-2 and N-4: r = {r_n24:.3f}, p = {p_n24:.4f}")
 print(f"Correlation between N-3 and N-4: r = {r_n34:.3f}, p = {p_n34:.4f}")
+
+amplitude_path = results_path / "amplitudes_n_back_first_half.csv"
+df = pd.read_csv(amplitude_path, sep=";", header=0)
+plot_df = df.rename(columns={
+    "delta_1": "N−1",
+    "delta_2": "N−2",
+    "delta_3": "N−3",
+    "delta_4": "N−4",
+})
+
+g = sns.pairplot(
+    plot_df,
+    vars=["N−1", "N−2", "N−3", "N−4"],
+    corner=True,
+    diag_kind="hist",
+)
+
+for row in range(1, 4):
+    for col in range(row):
+        ax = g.axes[row, col]
+        ax.axhline(0, color="grey", linestyle="--")
+        ax.axvline(0, color="grey", linestyle="--")
+
+g.savefig(results_path / "figures_first_half" / "Amplitude_correlation_plots.png")

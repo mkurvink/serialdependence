@@ -1,11 +1,12 @@
-from paths import global_path, results_path
+from paths import tables_first_half_path, figures_first_half_path
 import pandas as pd
 import numpy as np
 from scipy.stats import pearsonr
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-amplitude_path = results_path / "amplitudes_n_back_first_half.csv"
+# Change path based on binned / not binned
+amplitude_path = tables_first_half_path / "amplitudes_n_back_first_half_binned.csv"
 df = pd.read_csv(amplitude_path, sep=";", skiprows=1, header=None)
 row_length = len(df)
 column_length = len(df.columns)
@@ -111,7 +112,6 @@ print(f"Correlation between N-2 and N-3: r = {r_n23:.3f}, p = {p_n23:.4f}")
 print(f"Correlation between N-2 and N-4: r = {r_n24:.3f}, p = {p_n24:.4f}")
 print(f"Correlation between N-3 and N-4: r = {r_n34:.3f}, p = {p_n34:.4f}")
 
-amplitude_path = results_path / "amplitudes_n_back_first_half.csv"
 df = pd.read_csv(amplitude_path, sep=";", header=0)
 plot_df = df.rename(columns={
     "delta_1": "N−1",
@@ -133,4 +133,4 @@ for row in range(1, 4):
         ax.axhline(0, color="grey", linestyle="--")
         ax.axvline(0, color="grey", linestyle="--")
 
-g.savefig(results_path / "figures_first_half" / "Amplitude_correlation_plots.png")
+g.savefig(figures_first_half_path / "Amplitude_correlation_plots_binned.png")

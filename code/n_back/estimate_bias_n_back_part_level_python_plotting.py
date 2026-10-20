@@ -22,7 +22,7 @@ def estimate_bias_n_back_part_level():
     signed_p_values = np.full(X, np.nan)
     absolute_p_values = np.full(X, np.nan)
     significance_records = []
-    n_permutations = 4000    # Number of permutations
+    n_permutations = 0    # Number of permutations
     rng = np.random.default_rng(289)  # Random number generator for reproducibility
     # Derivative of Gaussian curve
     def DoG(x, a, peak):
@@ -214,7 +214,7 @@ def estimate_bias_n_back_part_level():
 
                         fit_number = len(obs_amplitudes)
 
-                        if fit_number % 150 == 0:
+                        if fit_number % 140 == 0:
                             plot_participant_fit(
                                 x_data=x_data,
                                 y_data=y_data,

@@ -18,8 +18,10 @@ def estimate_bias_n_back_part_level():
     # fdr_p_values = [None] * X
     signed_p_values = np.full(X, np.nan)
     absolute_p_values = np.full(X, np.nan)
+    group_positive_p_values = np.full(X, np.nan)
+    group_negative_p_values = np.full(X, np.nan)
     significance_records = []
-    n_permutations = 1    # Number of permutations
+    n_permutations = 250    # Number of permutations
     rng = np.random.default_rng(289)  # Random number generator for reproducibility
     # Derivative of Gaussian curve
     def DoG(x, a, peak):
@@ -188,6 +190,8 @@ def estimate_bias_n_back_part_level():
         fit_perm_higher_counts = np.zeros(n_observed_fits, dtype=int)
         permuted_signed_means = np.full(n_permutations, np.nan)
         permuted_absolute_means = np.full(n_permutations, np.nan)
+        permuted_positive_means = np.full(n_permutations, np.nan)
+        permuted_negative_means = np.full(n_permutations, np.nan)
 
         for permutation in range(n_permutations):
             obs_amplitudes = []
@@ -239,15 +243,20 @@ def estimate_bias_n_back_part_level():
             permuted_signed_means[permutation] = np.mean(permuted_obs_amplitudes)
             permuted_absolute_means[permutation] = np.mean(np.abs(permuted_obs_amplitudes))
 
-            # if (permutation + 1) % (n_permutations / 10) == 0:
-            #     print(f"N-{trial_lat + 1}: {permutation + 1}/{n_permutations} permutations completed")
+            perm_positive = permuted_obs_amplitudes > 0
+            perm_negative = permuted_obs_amplitudes < 0
+            permuted_positive_means[permutation] = np.mean(permuted_obs_amplitudes[perm_positive])
+            permuted_negative_means[permutation] = np.mean(permuted_obs_amplitudes[perm_negative])
+
+            if (permutation + 1) % (n_permutations / 10) == 0:
+                print(f"N-{trial_lat + 1}: {permutation + 1}/{n_permutations} permutations completed")
 
         # Calculate p-value per trial_lat 
         fit_p_values[trial_lat] = (1 + fit_perm_higher_counts) / (n_permutations + 1)
         # fdr_p_values[trial_lat] = benjamini_hochberg(fit_p_values[trial_lat])
         # significant_fdr = fdr_p_values[trial_lat] <= 0.05
         significant_p = fit_p_values[trial_lat] <= 0.05
-
+        
         positive = observed_amplitudes > 0
         negative = observed_amplitudes < 0
         zero = observed_amplitudes == 0                                     ##############
@@ -266,6 +275,21 @@ def estimate_bias_n_back_part_level():
         print(f"Significant negative amplitudes: {significant_negative_count}/{n_observed_fits}\n")
         print(f"Significant zero amplitudes: {significant_zero_count}/{n_observed_fits}")
 
+        observed_signed_mean = np.mean(observed_amplitudes)
+        observed_absolute_mean = np.mean(np.abs(observed_amplitudes))
+        signed_p_values[trial_lat] = (1 + np.sum(np.abs(permuted_signed_means) >= np.abs(observed_signed_mean))) / (n_permutations + 1)
+        absolute_p_values[trial_lat] = (1 + np.sum(permuted_absolute_means >= observed_absolute_mean)) / (n_permutations + 1)
+
+        observed_positive_mean = np.mean(observed_amplitudes[positive])
+        observed_negative_mean = np.mean(observed_amplitudes[negative])
+        group_positive_p_values[trial_lat] = (1 + np.sum(permuted_positive_means >= observed_positive_mean)) / (n_permutations + 1)
+        group_negative_p_values[trial_lat] = (1 + np.sum(permuted_negative_means <= observed_negative_mean)) / (n_permutations + 1) # Mind the flipped sign here '<'. We would use '>' if both amplitudes were absolute.
+
+        print(f"Signed mean amplitude p-value for N-{trial_lat + 1}: {signed_p_values[trial_lat]}")
+        print(f"Absolute mean amplitude p-value for N-{trial_lat + 1}: {absolute_p_values[trial_lat]}")
+        print(f"Positive mean amplitude p-value for N-{trial_lat + 1}: {group_positive_p_values[trial_lat]}")
+        print(f"Negative mean amplitude p-value for N-{trial_lat + 1}: {group_negative_p_values[trial_lat]}")
+
         significance_records.append({
             "lag": trial_lat + 1,
             "total_fits": n_observed_fits,
@@ -273,15 +297,11 @@ def estimate_bias_n_back_part_level():
             "significant_positive": significant_positive_count,
             "significant_negative": significant_negative_count,
             "significant_zero": significant_zero_count,
-        })
-
-        observed_signed_mean = np.mean(observed_amplitudes)
-        observed_absolute_mean = np.mean(np.abs(observed_amplitudes))
-        signed_p_values[trial_lat] = (1 + np.sum(np.abs(permuted_signed_means) >= np.abs(observed_signed_mean))) / (n_permutations + 1)
-        absolute_p_values[trial_lat] = (1 + np.sum(permuted_absolute_means >= observed_absolute_mean)) / (n_permutations + 1)
-
-        print(f"Signed mean amplitude p-value for N-{trial_lat + 1}: {signed_p_values[trial_lat]}")
-        print(f"Absolute mean amplitude p-value for N-{trial_lat + 1}: {absolute_p_values[trial_lat]}")
+            "signed_mean_amplitude_p": signed_p_values[trial_lat],
+            "absolute_mean_amplitude_p": absolute_p_values[trial_lat],
+            "positive_p": group_positive_p_values[trial_lat],
+            "negative_p": group_negative_p_values[trial_lat],
+        })      
 
     fit_p_table = pd.DataFrame({f"delta_{lag+1}": pd.Series(fit_p_values[lag]) for lag in range(X)})
     fit_p_table.to_csv(results_path / "fit_p_values_n_back_first_half.csv", sep = ";", index = False)

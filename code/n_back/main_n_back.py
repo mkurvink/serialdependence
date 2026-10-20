@@ -3,6 +3,7 @@ import sys
 from paths import global_path
 from n_back_columns import create_n_back_datasets
 from estimate_bias_n_back_part_level_python import estimate_bias_n_back_part_level
+from estimate_bias_n_back_part_level_python_binned import estimate_bias_n_back_part_level_binned
 
 n_back_path = global_path / "code" / "n_back"
 
@@ -27,3 +28,6 @@ n_back_path = global_path / "code" / "n_back"
 
 # Step 4: Run the Python analysis
 estimate_bias_n_back_part_level()
+
+# # Step 4b: Run the Python analysis for binned deltas
+# estimate_bias_n_back_part_level_binned()

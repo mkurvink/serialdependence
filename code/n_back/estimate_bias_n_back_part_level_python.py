@@ -21,7 +21,7 @@ def estimate_bias_n_back_part_level():
     group_positive_p_values = np.full(X, np.nan)
     group_negative_p_values = np.full(X, np.nan)
     significance_records = []
-    n_permutations = 250    # Number of permutations
+    n_permutations = 10000    # Number of permutations
     rng = np.random.default_rng(289)  # Random number generator for reproducibility
     # Derivative of Gaussian curve
     def DoG(x, a, peak):
@@ -137,45 +137,45 @@ def estimate_bias_n_back_part_level():
         print(f"Mean amplitude for N-{trial_lat + 1}: {amp_std_delta[trial_lat,0]}, SD: {amp_std_delta[trial_lat,1]}")
         print(f"Mean absolute amplitude for N-{trial_lat + 1}: {amp_std_delta_abs[trial_lat,0]}, SD: {amp_std_delta_abs[trial_lat,1]}")
 
-    # # Plotting the mean amplitudes with error bars
-    # n_back = np.arange(1, X + 1)
+    # Plotting the mean amplitudes with error bars
+    n_back = np.arange(1, X + 1)
 
-    # fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharex=True)
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4), sharex=True)
 
-    # axes[0].errorbar(
-    #     n_back,
-    #     amp_std_delta[:, 0],
-    #     yerr=amp_std_delta[:, 1],
-    #     marker="o",
-    #     capsize=4,
-    #     color="black",
-    # )
-    # axes[0].axhline(0, color="gray", linestyle="--", linewidth=1)
-    # axes[0].set_title("Signed amplitudes")
-    # axes[0].set_xlabel("Previous trial")
-    # axes[0].set_ylabel("Mean amplitude ± SD")
+    axes[0].errorbar(
+        n_back,
+        amp_std_delta[:, 0],
+        yerr=amp_std_delta[:, 1],
+        marker="o",
+        capsize=4,
+        color="black",
+    )
+    axes[0].axhline(0, color="gray", linestyle="--", linewidth=1)
+    axes[0].set_title("Signed amplitudes")
+    axes[0].set_xlabel("Previous trial")
+    axes[0].set_ylabel("Mean amplitude ± SD")
 
-    # axes[1].errorbar(
-    #     n_back,
-    #     amp_std_delta_abs[:, 0],
-    #     yerr=amp_std_delta_abs[:, 1],
-    #     marker="o",
-    #     capsize=4,
-    #     color="black",
-    # )
-    # axes[1].set_title("Absolute amplitudes")
-    # axes[1].set_xlabel("Previous trial")
-    # axes[1].set_ylabel("Mean absolute amplitude ± SD")
+    axes[1].errorbar(
+        n_back,
+        amp_std_delta_abs[:, 0],
+        yerr=amp_std_delta_abs[:, 1],
+        marker="o",
+        capsize=4,
+        color="black",
+    )
+    axes[1].set_title("Absolute amplitudes")
+    axes[1].set_xlabel("Previous trial")
+    axes[1].set_ylabel("Mean absolute amplitude ± SD")
 
-    # for ax in axes:
-    #     ax.set_xticks(n_back)
-    #     ax.set_xticklabels([f"N-{i}" for i in n_back])
-    #     ax.spines["top"].set_visible(False)
-    #     ax.spines["right"].set_visible(False)
+    for ax in axes:
+        ax.set_xticks(n_back)
+        ax.set_xticklabels([f"N-{i}" for i in n_back])
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
 
-    # fig.tight_layout()
-    # fig.savefig(results_path / "mean_amplitudes_n_back.png", dpi=300)
-    # plt.show()
+    fig.tight_layout()
+    fig.savefig(results_path / "mean_amplitudes_n_back.png", dpi=300)
+    plt.close(fig)
 
 ################################################################################
 ################## Run only when doing permutations ############################
@@ -183,6 +183,7 @@ def estimate_bias_n_back_part_level():
 
     # Computing the bias for the observed data
     for trial_lat in range(X):
+        print(f"Starting permutations for N - {trial_lat + 1}\n")
         delta_variable = f"delta_{trial_lat + 1}"
         observed_amplitudes = np.asarray(amplitudes[trial_lat])
         n_observed_fits = len(observed_amplitudes)

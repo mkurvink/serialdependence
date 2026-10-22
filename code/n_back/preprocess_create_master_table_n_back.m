@@ -22,7 +22,9 @@ study_list = unique(cellstr(csvfiles));
 % Standardize key variables to be used from each dataset
 X = 10; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 delta_variables = arrayfun(@(i) sprintf('delta_%d',i),1:X,'UniformOutput',false);
-variables = [{'obs','theta','resp','delta','error','cond','rt','block','study','experiment','stimulus','expnum'},delta_variables,{'trial_in_block','block_unique'}];
+res_angle_variables = arrayfun(@(i) sprintf('res_angle_%d',i),1:X,'UniformOutput',false);
+res_mag_variables = arrayfun(@(i) sprintf('res_mag_%d',i),1:X,'UniformOutput',false);
+variables = [{'obs','theta','resp','delta','error','cond','rt','block','study','experiment','stimulus','expnum'},delta_variables, res_angle_variables, res_mag_variables,{'trial_in_block','block_unique'}];
 fprintf('\nGenerating Master table\n\n');
 master_tbl = table;  % Initialize empty master table
 

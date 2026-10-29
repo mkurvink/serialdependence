@@ -15,17 +15,31 @@ for i = 1:numel(files)
     study_trial_length = height(study);
     res_angle_table = nan(study_trial_length, X);
     res_mag_table = nan(study_trial_length, X);
+    motion_rows = strcmpi(strtrim(string(study.stimulus)), "Motion");
+
+    if all(motion_rows)
+        period = 360;
+    elseif ~any(motion_rows)
+        period = 180;
+    else
+        error('File %s contains mixed stimulus types; handle them separately.', files(i).name);
+    end
+
+    angle_multiplier = 360 / period;    % 1 or 2, as 180 degree orientation data needs to be multiplied by 2 to form a full 360 degree circle to do the transformation on
 
     for x = 1:X
         for j = 1:study_trial_length
-            trial_ang = study.theta(j-1:-1:max(1, j-x+1));  % start is i - 1, so one trial before the current, step size is -1, because we are going back and the stop is max(1, i-x+1) because we don't want to go back further than trial 1 and we don't want to include the trial for N - x
+            trial_ang = study.theta(j-1:-1:max(1, j-x+1));  % start is j - 1, so one trial before the current, step size is -1, because we are going back and the stop is max(1, j-x+1) because we don't want to go back further than trial 1 and we don't want to include the trial for N - x
             if isempty(trial_ang)
                 continue
             end
+
+
             trial_rad = circ_ang2rad(trial_ang);
-            res_vector_rad = circ_mean(2 * trial_rad);
-            res_angle = circ_rad2ang(res_vector_rad / 2);
-            res_mag = circ_r(2 * trial_rad);
+            res_vector_rad = circ_mean(angle_multiplier * trial_rad);
+
+            res_angle = circ_rad2ang(res_vector_rad) / angle_multiplier;
+            res_mag = circ_r(angle_multiplier * trial_rad);
             res_angle_table(j,x) = res_angle;
             res_mag_table(j,x) = res_mag;
 

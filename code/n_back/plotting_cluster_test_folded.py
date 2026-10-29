@@ -505,25 +505,26 @@ import pandas as pd
 import numpy as np
 
 # Change in line with data
-bin_sizes = [3, 11]
+bin_sizes = [11]
 X = 10
 
+# This is set to plot the folded cluster-based permutation tests with only the Fischer et al. study
 for bin_size in bin_sizes:
     print(f"Plotting {bin_size}-degree window figures")
-    pos_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "positive_clusters_folded.csv", sep = ";")
+    pos_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "positive_clusters_folded_only_Fischer.csv", sep = ";")
     np.array(pos_clusters)
-    neg_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "negative_clusters_folded.csv", sep = ";")
+    neg_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "negative_clusters_folded_only_Fischer.csv", sep = ";")
     np.array(neg_clusters)
     save_folder = cluster_based_figs_path / f"{bin_size}_degree_window"
     save_folder.mkdir(parents=True, exist_ok=True)
     for x in range(X):
         p_value_combined, cluster_range_combined, mass_combined = cluster_recognition(x=x+1, clusters = [pos_clusters, neg_clusters])
 
-        group_bias_data = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / f"group_bias_N_{x+1}_folded.csv", sep = ";")
+        group_bias_data = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / f"group_bias_N_{x+1}_folded_only_Fischer.csv", sep = ";")
         delta_values = np.array(group_bias_data.loc[:,"DeltaDegrees"])
         group_bias = np.array(group_bias_data.loc[:,"MeanBias"])
         clusters = cluster_range_combined
-        save_path = save_folder / f"cluster_based_N_{x+1}_folded"
+        save_path = save_folder / f"cluster_based_N_{x+1}_folded_only_Fischer"
 
         events = [{"time": 0}]
 
@@ -537,3 +538,33 @@ for bin_size in bin_sizes:
             events=events
         )
         print(f"Finished plotting the figure for N-{x+1}")
+
+# for bin_size in bin_sizes:
+#     print(f"Plotting {bin_size}-degree window figures")
+#     pos_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "positive_clusters_folded.csv", sep = ";")
+#     np.array(pos_clusters)
+#     neg_clusters = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / "negative_clusters_folded.csv", sep = ";")
+#     np.array(neg_clusters)
+#     save_folder = cluster_based_figs_path / f"{bin_size}_degree_window"
+#     save_folder.mkdir(parents=True, exist_ok=True)
+#     for x in range(X):
+#         p_value_combined, cluster_range_combined, mass_combined = cluster_recognition(x=x+1, clusters = [pos_clusters, neg_clusters])
+
+#         group_bias_data = pd.read_csv(tables_first_half_path / f"{bin_size}_degree_window" / f"group_bias_N_{x+1}_folded.csv", sep = ";")
+#         delta_values = np.array(group_bias_data.loc[:,"DeltaDegrees"])
+#         group_bias = np.array(group_bias_data.loc[:,"MeanBias"])
+#         clusters = cluster_range_combined
+#         save_path = save_folder / f"cluster_based_N_{x+1}_folded"
+
+#         events = [{"time": 0}]
+
+#         fig, ax = plot_timecourses_with_clusters(
+#             times = delta_values,
+#             data={f"N - {x+1}": group_bias},
+#             clusters={f"N - {x+1}": cluster_range_combined},
+#             ylabel="Group bias",
+#             xlabel="Delta values",
+#             save_path=save_path,
+#             events=events
+#         )
+#         print(f"Finished plotting the figure for N-{x+1}")

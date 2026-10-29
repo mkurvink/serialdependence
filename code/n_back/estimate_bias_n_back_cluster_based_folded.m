@@ -5,14 +5,41 @@ scriptPath = mfilename('fullpath');
 analysisDir = fileparts(fileparts(currentDir));
 output_dir = fullfile(analysisDir, 'results');
 table_dir = fullfile(output_dir, 'tables_first_half');
-tbl = readtable(fullfile(analysisDir,'results','SD_ma_master_table_n_back_first_half.csv'),'Delimiter',';');
+amplitudes_pos_neg = readtable(fullfile(output_dir, 'amplitudes_n_back_first_half.csv'), 'Delimiter', ';');
+tbl = readtable(fullfile(analysisDir,'results','SD_ma_master_table_n_back_first_half.csv'),'Delimiter',',');
+study_numbers = unique(tbl.studynum);
+
+fprintf('\nStudy overview before filtering:\n');
+
+for study_number = study_numbers'
+    study_rows = tbl.studynum == study_number;
+    study_names = unique(string(tbl.study(study_rows)));
+
+    fprintf('Study %d: %s — %d trials\n', study_number, strjoin(study_names, ', '), sum(study_rows));
+end
+
+fprintf('Total: %d studies, %d trials\n\n', numel(study_numbers), height(tbl));
+%%% Ensures using only orientation trials
+% is_motion = strcmpi(strtrim(string(tbl.stimulus)), "Motion");
+% tbl = tbl(is_motion, :);
+%%% Allows choosing specific studies
+% included_studies = [8];
+
+% for study_number = included_studies
+%     included_rows = tbl.studynum == study_number;
+%     study_names = unique(string(tbl.study(included_rows)));
+
+%     fprintf('Including study %d: %s — %d trials\n', study_number, strjoin(study_names, ', '), sum(included_rows));
+% end
+
+% tbl = tbl(ismember(tbl.studynum, included_studies), :);
 
 % Initializing some variables
 X = 10;
 error_variable = 'error_ori_deb';
 alpha = 0.05;
-bin_sizes = [3, 11];        %%%%%%%%%%%%%%%%%
-n_permutations = 1000;       %%%%%%%%%%%%%%%%%
+bin_sizes = 11;        %%%%%%%%%%%%%%%%%
+n_permutations = 500;       %%%%%%%%%%%%%%%%%
 
 group_bias = cell(1, X);
 t_values = nan(91, X);
@@ -128,7 +155,7 @@ for bin_size = bin_sizes
         % grid on;
 
         bias_table = table(group_delta, group_bias{x}, 'VariableNames', {'DeltaDegrees', 'MeanBias'});
-        filename = fullfile(table_dir_bin_size, sprintf('group_bias_N_%d_folded.csv', x));
+        filename = fullfile(table_dir_bin_size, sprintf('group_bias_N_%d_folded_only_Fischer.csv', x));  %%%%%%%%%%%%%%%%%%%%
         writetable(bias_table, filename, 'Delimiter', ';');
 
     end
@@ -244,15 +271,13 @@ for bin_size = bin_sizes
         % An attempt to have results saved every lag, in order to not lose progress when running fails halfway through
         save_cluster_csv( ...
             pos_clusters(1:x), pos_cluster_p(1:x), ...
-            fullfile(table_dir_bin_size, 'positive_clusters_folded.csv'));
+            fullfile(table_dir_bin_size, 'positive_clusters_folded_only_Fischer.csv')); %%%%%%%%%%%%%%%%%%%%
 
         save_cluster_csv( ...
             neg_clusters(1:x), neg_cluster_p(1:x), ...
-            fullfile(table_dir_bin_size, 'negative_clusters_folded.csv'));
+            fullfile(table_dir_bin_size, 'negative_clusters_folded_only_Fischer.csv')); %%%%%%%%%%%%%%%%%%%%
 
     end
-    % save_cluster_csv(pos_clusters, pos_cluster_p, fullfile(table_dir_bin_size, 'positive_clusters_folded.csv'));
-    % save_cluster_csv(neg_clusters, neg_cluster_p, fullfile(table_dir_bin_size, 'negative_clusters_folded.csv'));
 end
 end
 
